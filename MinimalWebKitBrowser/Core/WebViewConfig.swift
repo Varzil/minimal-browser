@@ -41,6 +41,9 @@ enum WebViewConfig {
             controller.add(list)
         }
 
+        // --- YouTube Ad Blocking / Interface cleanup ---
+        injectYouTubeFixes(into: controller)
+
         let config = WKWebViewConfiguration()
         config.userContentController = controller
 
@@ -123,6 +126,40 @@ enum WebViewConfig {
     }
 
     // MARK: - Helpers
+
+    private static func injectYouTubeFixes(into controller: WKUserContentController) {
+        let js = """
+        (function() {
+            const blockAds = () => {
+                // Remove overlay ads
+                const overlays = document.querySelectorAll('.ytp-ad-overlay-container, .ytp-ad-message-container');
+                overlays.forEach(el => el.remove());
+
+                // Skip video ads
+                const video = document.querySelector('video');
+                const ad = document.querySelector('.ad-showing, .ytp-ad-visit-advertiser-button');
+                if (ad && video && isFinite(video.duration)) {
+                    video.currentTime = video.duration;
+                }
+
+                // Click skip button
+                const skipButton = document.querySelector('.ytp-ad-skip-button, .ytp-ad-skip-button-modern');
+                if (skipButton) {
+                    skipButton.click();
+                }
+            };
+
+            // Run regularly
+            setInterval(blockAds, 500);
+
+            // Also run on mutations
+            const observer = new MutationObserver(blockAds);
+            observer.observe(document.body, { childList: true, subtree: true });
+        })();
+        """
+        let script = WKUserScript(source: js, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+        controller.addUserScript(script)
+    }
 
     private static func installUserScripts(
         into controller: WKUserContentController,

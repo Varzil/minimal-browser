@@ -5,27 +5,50 @@
       "url-filter": ".*",
       "load-type": ["third-party"],
       "if-domain": [
-        "*doubleclick.net",
-        "*google-analytics.com",
-        "*googletagmanager.com",
-        "*googletagservices.com",
-        "*adservice.google.com",
-        "*adsense.google.com",
-        "*facebook.net",
-        "*fbcdn.net",
-        "*amazon-adsystem.com",
-        "*criteo.com",
-        "*criteo.net",
-        "*scorecardresearch.com",
-        "*quantserve.com",
-        "*adnxs.com",
-        "*taboola.com",
-        "*outbrain.com",
-        "*mixpanel.com",
-        "*segment.io",
-        "*hotjar.com",
-        "*clarity.ms",
-        "*yandex.ru"
+        "doubleclick.net",
+        "google-analytics.com",
+        "googletagmanager.com",
+        "googletagservices.com",
+        "adservice.google.com",
+        "adsense.google.com",
+        "facebook.net",
+        "fbcdn.net",
+        "amazon-adsystem.com",
+        "criteo.com",
+        "criteo.net",
+        "scorecardresearch.com",
+        "quantserve.com",
+        "adnxs.com",
+        "taboola.com",
+        "outbrain.com",
+        "mixpanel.com",
+        "segment.io",
+        "hotjar.com",
+        "clarity.ms",
+        "yandex.ru",
+        "adnxs.com",
+        "adtech.de",
+        "advertising.com",
+        "atdmt.com",
+        "casalemedia.com",
+        "dotomi.com",
+        "exelator.com",
+        "eyewonder.com",
+        "googleadservices.com",
+        "invitemedia.com",
+        "mathtag.com",
+        "media6degrees.com",
+        "mediaplex.com",
+        "openx.net",
+        "revsci.net",
+        "rlcdn.com",
+        "rubiconproject.com",
+        "serving-sys.com",
+        "sharethrough.com",
+        "tribalfusion.com",
+        "turn.com",
+        "yieldmo.com",
+        "zedo.com"
       ]
     },
     "action": { "type": "block" }
@@ -46,5 +69,38 @@
       "load-type": ["third-party"]
     },
     "action": { "type": "block-cookies" }
+  },
+  {
+    "comment": "Block YouTube Ads (Generic)",
+    "trigger": {
+      "url-filter": ".*",
+      "if-domain": ["youtube.com"],
+      "url-filter-is-case-sensitive": false,
+      "resource-type": ["image", "script", "xmlhttprequest"]
+    },
+    "action": {
+      "type": "block"
+    }
+  },
+  {
+    "comment": "Block YouTube Specific Ad Endpoints",
+    "trigger": {
+      "url-filter": "/(adunit|ptracking|stats/ads|ad_break|ad_type|ad_video)/",
+      "if-domain": ["youtube.com"]
+    },
+    "action": {
+      "type": "block"
+    }
+  },
+  {
+    "comment": "Hide YouTube Ad Elements",
+    "trigger": {
+      "url-filter": ".*",
+      "if-domain": ["youtube.com"]
+    },
+    "action": {
+      "type": "css-display-none",
+      "selector": ".video-ads, .ytp-ad-module, .ytp-ad-overlay-container, #player-ads, ytd-promoted-video-renderer, ytd-display-ad-renderer, ytd-compact-promoted-item-renderer, ytd-promoted-sparkles-web-renderer, .ytd-merch-shelf-renderer"
+    }
   }
 ]

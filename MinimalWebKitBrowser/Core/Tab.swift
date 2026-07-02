@@ -17,6 +17,8 @@ protocol TabContext: AnyObject {
     func requestNewTab(for request: URLRequest, configuration: WKWebViewConfiguration?) -> WKWebView?
     /// Called when a navigation becomes a download.
     func handleDownload(_ download: WKDownload)
+    /// Called when the tab's metadata (title, URL) changes.
+    func tabDidUpdate(_ tab: Tab)
 }
 
 // MARK: - Tab
@@ -44,6 +46,7 @@ final class Tab: ObservableObject, Identifiable {
     @Published private(set) var canGoForward: Bool = false
     @Published private(set) var isLoaded: Bool = false   // does a live WKWebView exist?
     @Published private(set) var faviconURL: URL?          // for sidebar display
+    @Published private(set) var favicon: NSImage?         // loaded favicon
 
     /// The URL to (re)load when the web view is materialized.
     private(set) var pendingURL: URL?
@@ -255,6 +258,11 @@ extension Tab {
         isLoading = false
         if let t = webView.title, !t.isEmpty { title = t }
         extractFavicon(from: webView)
+
+        if let url = webView.url {
+            HistoryManager.shared.add(url: url, title: title)
+        }
+        context?.tabDidUpdate(self)
     }
 
     /// Extract the favicon URL from the loaded page using JS, falling back to
@@ -289,6 +297,24 @@ extension Tab {
                     // Fallback: Google's favicon service (always works, cached).
                     self.faviconURL = URL(string: "https://www.google.com/s2/favicons?domain=\(host)&sz=64")
                 }
+                self.loadFavicon()
+            }
+        }
+    }
+
+    private func loadFavicon() {
+        guard let url = faviconURL else { return }
+        Task.detached(priority: .background) {
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                if let image = NSImage(data: data) {
+                    await MainActor.run {
+                        self.favicon = image
+                        self.context?.tabDidUpdate(self)
+                    }
+                }
+            } catch {
+                // Silently fail for favicon loading
             }
         }
     }

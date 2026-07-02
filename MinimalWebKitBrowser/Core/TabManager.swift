@@ -78,6 +78,12 @@ final class TabManager: ObservableObject, TabContext {
         DownloadManager.shared.attach(download)
     }
 
+    func tabDidUpdate(_ tab: Tab) {
+        objectWillChange.send()
+        // Save session whenever a tab updates (important for title/URL changes)
+        SessionManager.shared.save(tabs: self.snapshot())
+    }
+
     // MARK: Tab CRUD
 
     @discardableResult

@@ -60,7 +60,7 @@ struct BrowserWindow: View {
     }
 
     /// True only when the sidebar is enabled, visible, and on the given side.
-    /// In compact mode, the sidebar is hidden (future: floating hover reveal).
+    /// In compact mode, the sidebar is hidden (maximized content).
     private func sidebarShown(_ side: SidebarSide) -> Bool {
         guard s.sidebarVisible, !s.compactMode else { return false }
         return (s.tabPosition == .left && side == .left)
