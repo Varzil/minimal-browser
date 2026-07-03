@@ -136,7 +136,8 @@ private struct AppearanceTab: View {
             }
 
             Section("Window") {
-                Toggle("Compact mode (floating sidebar on hover)", isOn: store.binding(\.compactMode))
+                Toggle("Compact mode (maximized content)", isOn: store.binding(\.compactMode))
+                Toggle("Collapse toolbar", isOn: store.binding(\.toolbarCollapsed))
                 Toggle("Show Home button", isOn: store.binding(\.showHomeButton))
                 Toggle("Show Reload button", isOn: store.binding(\.showReloadButton))
                 Toggle("Show status bar", isOn: store.binding(\.showStatusBar))

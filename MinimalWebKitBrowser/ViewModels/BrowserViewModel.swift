@@ -89,6 +89,16 @@ final class BrowserViewModel: ObservableObject {
     func toggleCompactMode() {
         settings.update { $0.compactMode.toggle() }
     }
+    /// Toggle toolbar collapse.
+    func toggleToolbarCollapse() {
+        settings.update { $0.toolbarCollapsed.toggle() }
+    }
+    /// Open settings window.
+    func openSettingsWindow() {
+        // This is handled by AppDelegate in this manual-window setup,
+        // but we expose it here for the toolbar to call.
+        NSApp.sendAction(#selector(NSApplication.delegate?.openSettings), to: nil, from: nil)
+    }
     /// Cycle sidebar width between collapsed, narrow, and wide (like Zen's Alt+B).
     func cycleSidebarWidth() {
         settings.update { s in

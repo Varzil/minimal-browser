@@ -146,6 +146,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
 
         let viewMenuItem = NSMenuItem()
         let viewMenu = NSMenu(title: "View")
+        viewMenu.addItem(withTitle: "Show History", action: #selector(openHistory), keyEquivalent: "y").target = self
+        viewMenu.addItem(.separator())
         viewMenu.addItem(withTitle: "Reload Page", action: #selector(reload), keyEquivalent: "r").target = self
         viewMenu.addItem(withTitle: "Stop", action: #selector(stop), keyEquivalent: ".").target = self
         viewMenu.addItem(.separator())
@@ -192,6 +194,22 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     @objc private func toggleSidebarCollapse() { vm?.toggleSidebarCollapse() }
     @objc private func cycleSidebarWidth() { vm?.cycleSidebarWidth() }
     @objc private func toggleCompactMode() { vm?.toggleCompactMode() }
+    @objc private func openHistory() {
+        guard let vm = vm else { return }
+        let historyView = HistoryView { url in
+            vm.tabs.selectedTab?.load(url)
+        }
+        let window = NSWindow(
+            contentRect: NSRect(x: 0, y: 0, width: 450, height: 600),
+            styleMask: [.titled, .closable, .miniaturizable, .resizable],
+            backing: .buffered,
+            defer: false
+        )
+        window.title = "History"
+        window.contentView = NSHostingController(rootView: historyView).view
+        window.center()
+        window.makeKeyAndOrderFront(nil)
+    }
     @objc private func openSettings() {
         let settingsView = SettingsView(store: SettingsStore.shared)
         let settingsWindow = NSWindow(
